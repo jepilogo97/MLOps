@@ -1,4 +1,4 @@
-# 🩺 Medical Diagnosis ML Challenge
+# 🩺 Medical Diagnosis AI Challenge - MLOps Sample Pipeline Design -> V1.0
 
 ## 📚 Background
 
