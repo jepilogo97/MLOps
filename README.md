@@ -1,11 +1,9 @@
 # 🩺 Medical Diagnosis AI Challenge
 # MLOps Sample Pipeline Design -> V1.0
 
-## 📚 Background
+## 📚 Objective
 
-In modern medicine, technological advances have led to a vast amount of available patient information. While this abundance is beneficial for **common diseases**, **rare diseases (orphan diseases)** suffer from a lack of data, making it difficult to train effective machine learning models.
-
-The objective of this project is to build a system that predicts the **likelihood of a patient suffering from a disease** based on their symptoms and demographic information. The model should perform well for both common and rare diseases, despite the challenges posed by class imbalance and limited data.
+This project delivers a production-ready pipeline to predict **a patient's disease severity** based on symptoms and demographic information. The solution supports both **common** and **rare (orphan) diseases**, overcoming challenges like **data imbalance**, **label noise**, and **privacy constraints**.
 
 ---
 
@@ -20,7 +18,7 @@ The dataset consists of clinical records with features such as:
 - Demographic data (e.g., age, sex, family history)
 - Historical medical information
 
-Each file (representing a patient or patient group) must be:
+Each file must be:
 - Cleaned and preprocessed
 - Enriched with engineered features
   - Based on the patient row
@@ -33,7 +31,7 @@ Model selection and evaluation are conducted separately to ensure consistency an
 
 ### 🔍 Prediction Task
 
-On a daily basis, new patient data is ingested. The system must process this data and **generate predictions for each patient** in real-time or in batch, ensuring quick and reliable feedback for healthcare professionals.
+On a daily basis, new patient data is ingested. The system must process this data and **generate predictions for each patient** in real-time, ensuring quick and reliable feedback for healthcare professionals.
 
 The model is integrated into a larger health platform and should complete predictions in a limited time window.
 
@@ -98,6 +96,8 @@ A variety of models are explored, including:
 - **Deep Learning**: CNNs, RNNs or Transformer-based models
 - **Bayesian and probabilistic models**
 
+**Model selection** usually favors **XGBoost** for structured symptom and demographic data due to its superior accuracy, speed, and ability to manage imbalanced datasets effectively.
+
 Frameworks: `scikit-learn`, `PyTorch`, `TensorFlow`
 
 ### 🧬 Data Management Strategies
@@ -124,7 +124,7 @@ Framework: `scikit-learn`
 
 ## 🚀 Production
 
-In the production phase, the trained models are deployed to serve predictions in real-time or batch systems. This stage also includes monitoring and retraining pipelines to ensure long-term model reliability.
+In the production phase, the trained models are deployed to serve predictions in real-time. This stage also includes monitoring and retraining pipelines to ensure long-term model reliability.
 
 ### 📦 Deployment
 
