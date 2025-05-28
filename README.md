@@ -7,7 +7,7 @@ This project delivers a production-ready pipeline to predict **a patient's disea
 
 The final solution is accessible to medical professionals via either:
 - a **local desktop interface**, or
-- a **remote API** hosted on a cloud platform or institutional server.
+- a **remote API** hosted on a cloud platform.
 
 ---
 
@@ -87,7 +87,7 @@ Additionally, labeled tags can include:
 - **Specific disease** – _Categorical_
 - **Type of disease** – _Numeric_
 
-![Design Diagram](https://github.com/user-attachments/assets/299e1466-caf4-4bca-9546-f1aa78272682)
+![Design Diagram](https://github.com/user-attachments/assets/4d258c07-8c2d-4080-b617-c5d870496111)
 
 
 ## 🛠️ Development
@@ -143,8 +143,7 @@ Model evaluation considers the specific context of class imbalance and medical p
 
 Framework: `scikit-learn`
 
-![Design Diagram](https://github.com/user-attachments/assets/8fa7012e-f92d-4dbe-b730-4b27cd11d6af)
-
+![Design Diagram](https://github.com/user-attachments/assets/fc0439ab-ac20-4c99-ade1-c295bf6e0756)
 
 ## 🚀 Production
 
@@ -242,6 +241,5 @@ Automated retraining ensures the model stays accurate as new data becomes availa
 
 ---
 
-![Design Diagram](https://github.com/user-attachments/assets/73fc7e1f-77b2-4212-895d-b044fe4aae1b)
-
+![Design Diagram](https://github.com/user-attachments/assets/5bd02e00-07f5-4883-af6f-8e0ba70213a9)
 
