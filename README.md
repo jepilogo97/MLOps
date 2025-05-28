@@ -1,9 +1,13 @@
 # 🩺 Medical Diagnosis AI Challenge
-# MLOps Sample Pipeline Design -> V1.0
+# MLOps Sample Pipeline Design -> V2.0
 
 ## 📚 Objective
 
 This project delivers a production-ready pipeline to predict **a patient's disease severity** based on symptoms and demographic information. The solution supports both **common** and **rare (orphan) diseases**, overcoming challenges like **data imbalance**, **label noise**, and **privacy constraints**.
+
+The final solution is accessible to medical professionals via either:
+- a **local desktop interface**, or
+- a **remote API** hosted on a cloud platform.
 
 ---
 
@@ -11,9 +15,7 @@ This project delivers a production-ready pipeline to predict **a patient's disea
 
 ### 🏗️ Model Training
 
-The model is trained offline by a machine learning engineer or data science team.
-
-The dataset consists of clinical records with features such as:
+Models are trained offline by a data science team using clinical records with features such as:
 - Patient symptoms
 - Demographic data (e.g., age, sex, family history)
 - Historical medical information
@@ -25,7 +27,7 @@ Each file must be:
   - Aggregates across the dataset
   - External medical knowledge sources
 
-Model selection and evaluation are conducted separately to ensure consistency and comparability. Once a model meets defined quality standards, it is approved for deployment.
+Model evaluation is decoupled from training to maintain consistency and ensure proper validation.
 
 ---
 
@@ -33,7 +35,27 @@ Model selection and evaluation are conducted separately to ensure consistency an
 
 On a daily basis, new patient data is ingested. The system must process this data and **generate predictions for each patient** in real-time, ensuring quick and reliable feedback for healthcare professionals.
 
-The model is integrated into a larger health platform and should complete predictions in a limited time window.
+Predictions must be generated instantly to support medical workflows and time-sensitive clinical decisions.
+
+---
+
+## 🛠️ MLOps Pipeline Architecture
+
+The system is divided into four core components:
+1. **Data Management**
+2. **Model Lifecycle (Training/Validation/Deployment)**
+3. **Serving Infrastructure**
+4. **Monitoring & Retraining**
+
+---
+
+## ⚙️ Assumptions
+
+- The model operates under **low-resource constraints** when used locally.
+- When deployed remotely, the **API endpoint must support secure authentication**.
+- The medical data used respects **HIPAA/GDPR compliance**.
+- All pipeline stages must be **containerized and reproducible**.
+- The deployment supports **real-time inference only**.
 
 ---
 
@@ -65,7 +87,7 @@ Additionally, labeled tags can include:
 - **Specific disease** – _Categorical_
 - **Type of disease** – _Numeric_
 
-![Design Diagram](https://github.com/user-attachments/assets/299e1466-caf4-4bca-9546-f1aa78272682)
+![Design Diagram](https://github.com/user-attachments/assets/4d258c07-8c2d-4080-b617-c5d870496111)
 
 
 ## 🛠️ Development
@@ -76,18 +98,20 @@ The development phase involves gathering and preprocessing diverse medical datas
 
 Medical data is obtained from a combination of:
 - **Electronic Health Records (EHR)**
-- **Public APIs** such as NIH, Orphanet, and MIMIC-III
+- **Public APIs** NIH, Orphanet, and MIMIC-III
 - **CSVs and relational databases**
-- **Cloud storage & version control** (e.g., Amazon S3, Redshift, DVC)
+- **Cloud storage & version control** (Amazon S3, Redshift, DVC)
 
 ### 🧹 Preprocessing
 
 Before model training, data undergoes several preprocessing steps:
 - Handling **missing values**
 - **Normalizing** numerical features
-- **Encoding** categorical variables
+- **Categorical** encoding (OneHot, Target Encoding)
+- **Feature scaling** (Z-score, MinMax)
+- Text **normalization** for clinical notes
 
-Tools used: `pandas`, `NumPy`, `scikit-learn`
+Tools used: `pandas`, `NumPy`, `scikit-learn`, `great_expectations`
 
 ### 🧠 Type of Models
 
@@ -119,8 +143,7 @@ Model evaluation considers the specific context of class imbalance and medical p
 
 Framework: `scikit-learn`
 
-![Design Diagram](https://github.com/user-attachments/assets/8fa7012e-f92d-4dbe-b730-4b27cd11d6af)
-
+![Design Diagram](https://github.com/user-attachments/assets/fc0439ab-ac20-4c99-ade1-c295bf6e0756)
 
 ## 🚀 Production
 
@@ -128,33 +151,95 @@ In the production phase, the trained models are deployed to serve predictions in
 
 ### 📦 Deployment
 
-Models are deployed using container-based and serverless infrastructure:
-- **Expose the model** through APIs or endpoints
-- **Use containers** for portability and scalability
+### ⚙️ Infrastructure Options
 
-Technologies:
-- `Docker`
-- `AWS Lambda`
+| Mode      | Stack                               |
+|-----------|-------------------------------------|
+| Local     | `Docker`, `Streamlit` GUI           |
+| Remote    | `FastAPI` + `Uvicorn` on `EC2`      |
 
-### 📊 Monitoring
+---
 
-To maintain model performance in real-world settings:
-- **Monitor data drift**
-- **Track model performance** over time
-- **Set up alerts** for anomalies or degradation
+### 🌐 API Serving
 
-Tools used:
-- `Neptune.ai`
-- `Prometheus` + `Grafana`
+Expose the model via a RESTful API using `FastAPI`.
+
+- `POST /predict` – Returns prediction and SHAP-based explanation.
+- Interactive docs available via Swagger UI.
+- Designed for easy integration into healthcare systems.
+
+---
+
+### 📦 Containerization
+
+Ensure reproducible and portable deployments using `Docker`.
+
+- All components are fully containerized.
+- Build automation via GitHub Actions on `main` push.
+- Deployment options:
+- Deployment options:
+  - **Local**:
+    - `docker-compose` setup
+    - Includes a `Streamlit` interface for medical staff to input patient data and receive predictions
+  - **Remote**:
+    - Hosted on an `AWS EC2` instance running `Docker` or `docker-compose`
+    - SSH access for manual or automated deployment
+    - Recommended for lightweight real-time inference workloads
+
+---
+
+### 🧪 CI/CD Pipeline
+
+Automated workflow ensures continuous integration and delivery.
+
+- ✅ Unit testing: `pytest`
+- 🧼 Code quality: `flake8`
+- 🐳 Docker image build on commit
+- 🧪 Staging environment integration tests
+
+---
+
+### 📈 Monitoring & Logging
+
+Robust monitoring ensures real-time reliability, model quality, and early detection of issues.
+
+- **🔍 Data Drift Detection** – `Evidently.ai`  
+  Detects changes in feature distributions between training and live data.
+
+- **📊 Model Performance Tracking** – `MLflow`  
+  Logs metrics like accuracy, F1-score, and AUC. Supports experiment versioning and monitoring over time.
+
+- **📈 Dashboards & Alerts** – `Prometheus` + `Grafana`  
+  Real-time dashboards and alerts for latency, prediction volume, and performance thresholds.
+
+- **🚨 Error Logging** – `Sentry`  
+  Captures API/runtime exceptions and sends notifications.
+
+---
 
 ### 🔁 Retraining
 
-As new data is generated, retraining is automated to keep models updated:
-- **Continuously store new patient data**
-- **Automate periodic retraining**
+Automated retraining ensures the model stays accurate as new data becomes available.
 
-Orchestration with: `Apache Airflow`
+- **📥 Data Ingestion** – Continuously log new patient records.
+- **🔁 Scheduled Retraining** – Periodic model updates to adapt to recent trends.
+- **⚙️ Orchestration** – Managed with `Apache Airflow` for scheduling and reproducibility.
 
-![Design Diagram](https://github.com/user-attachments/assets/73fc7e1f-77b2-4212-895d-b044fe4aae1b)
+---
 
+## 🖥️ Interface for Medical Use
+
+### Local Use:
+- GUI built in `Streamlit`
+- Loads model from serialized `joblib` or `ONNX` file
+- Lightweight and interpretable output
+
+### Cloud Use:
+- Access via HTTPS-secured API endpoint
+- Returns JSON with class + confidence scores
+- Optimized for real-time response
+
+---
+
+![Design Diagram](https://github.com/user-attachments/assets/5bd02e00-07f5-4883-af6f-8e0ba70213a9)
 
